@@ -2,7 +2,10 @@ import { useWeb3 } from "@/hooks/useWeb3";
 import type { NextPage } from "next";
 
 const Home: NextPage = () => {
-  const { account, isLoading, connectWallet } = useWeb3();
+  const { account, isLoading, connectWallet, switchChain, chains } = useWeb3();
+  const test = async () => {
+    await switchChain("shiden");
+  };
   return (
     <div className="container mx-auto text-gray-800 flex flex-col h-full justify-center items-center">
       <h1 className="text-6xl font-bold">Hello Web3 World!!</h1>

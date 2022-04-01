@@ -1,10 +1,10 @@
+import { defaultChains, getDefaultProviderOptions } from "@/util/config";
 import React, { createContext, useEffect, useState } from "react";
 import { Web3ContextInterface } from "../types/web3Types";
 import {
-  checkIsTargetChain,
-  getConnectedAccount,
   getAccountByIds,
   getChainId,
+  getConnectedAccount,
   getWeb3Provider,
 } from "../util/web3Util";
 
@@ -16,15 +16,11 @@ const getDefaultContextValue = (): Web3ContextInterface => ({
   chainId: null,
   isLoading: true,
   isMetaMask: false,
-  isTargetChain: false,
-  error: "",
+  chains: defaultChains,
   connectWallet: async () => {
     /*初期化前用 */
   },
-  disconnect: () => {
-    /*初期化前用 */
-  },
-  switchToTargetChain: async () => {
+  switchChain: async () => {
     /*初期化前用 */
   },
 });
@@ -33,21 +29,21 @@ export const Web3Context = createContext<Web3ContextInterface>(
   getDefaultContextValue()
 );
 
-export const Web3Provider: React.FC<
-  React.PropsWithChildren<{ key?: string }>
-> = ({ children }) => {
+export const Web3Provider: React.FC<React.PropsWithChildren<never>> = ({
+  children,
+}) => {
   const [provider, setProvider] = useState<Interface["provider"]>(null);
   const [account, setAccount] = useState<Interface["account"]>(null);
   const [chainId, setChainId] = useState<Interface["chainId"]>(null);
   const [isLoading, setIsLoading] = useState<Interface["isLoading"]>(false);
   const [isMetaMask, setIsMetaMask] = useState<Interface["isMetaMask"]>(false);
-  const [isTargetChain, setIsTargetChain] =
-    useState<Interface["isTargetChain"]>(false);
 
   const connectWallet = async () => {
     try {
       setIsLoading(true);
-      const [instance, _provider] = await getWeb3Provider();
+      const [instance, _provider] = await getWeb3Provider(
+        await getDefaultProviderOptions()
+      );
       setIsMetaMask(instance.isMetaMask);
       instance.on(
         "accountsChanged",
@@ -59,7 +55,8 @@ export const Web3Provider: React.FC<
       const accountPromise = async () =>
         setAccount(await getConnectedAccount(_provider));
       const providerPromise = async () => {
-        setIsTargetChain(checkIsTargetChain(await getChainId(_provider)));
+        const chainId = await getChainId(_provider);
+        setChainId(chainId);
         setProvider(_provider);
       };
       await Promise.all([accountPromise(), providerPromise()]);
@@ -70,15 +67,23 @@ export const Web3Provider: React.FC<
     }
   };
 
+  const switchChain = async (chain: keyof typeof defaultChains) => {
+    if (provider) {
+      const param = defaultChains[chain];
+      await provider.send("wallet_addEthereumChain", [param]);
+      await provider.send("wallet_switchEthereumChain", [
+        { chain: param.chainId },
+      ]);
+    }
+  };
+
   const resetWeb3 = () => {
     setProvider(null);
     setAccount(null);
     setChainId(null);
-    setIsTargetChain(false);
   };
 
   const handleAccountsChanged = async (_accountIds: string[]) => {
-    console.log(_accountIds);
     try {
       setIsLoading(true);
       setAccount(await getAccountByIds(_accountIds));
@@ -90,10 +95,7 @@ export const Web3Provider: React.FC<
     }
   };
 
-  const handleChainChanged = (_chainId: string) => {
-    setChainId(_chainId);
-    setIsTargetChain(checkIsTargetChain(_chainId));
-  };
+  const handleChainChanged = (_chainId: string) => setChainId(_chainId);
 
   useEffect(() => {
     localStorage.getItem("auto_connect") === "yes" && connectWallet();
@@ -102,14 +104,14 @@ export const Web3Provider: React.FC<
   return (
     <Web3Context.Provider
       value={{
-        ...getDefaultContextValue(),
         provider,
         account,
         chainId,
         isLoading,
         isMetaMask,
-        isTargetChain,
         connectWallet,
+        chains: defaultChains,
+        switchChain,
       }}
     >
       {children}

@@ -1,3 +1,4 @@
+import { Chains, defaultChains } from "@/util/config";
 import { ethers } from "ethers";
 
 type providerEvents = {
@@ -15,6 +16,21 @@ export interface Web3ProviderInterface
   ) => void;
 }
 
+export type ChainParameters = Record<string, ChainParameter>;
+
+export interface ChainParameter {
+  chainId: string;
+  blockExplorerUrls: string[];
+  chainName: string;
+  iconUrls: string[];
+  nativeCurrency: {
+    decimals: number;
+    name: string;
+    symbol: string;
+  };
+  rpcUrls: string[];
+}
+
 export interface Account {
   id: string;
   abbreviatedId: string;
@@ -27,12 +43,7 @@ export interface Web3ContextInterface {
   chainId: string | null;
   isMetaMask: boolean;
   isLoading: boolean;
-  isTargetChain: boolean;
-  error: string;
-  disconnect: () => void;
-  connectWallet: (opt?: {
-    isRequestAccount?: boolean;
-    wallet?: "metamask" | "wallet_connect";
-  }) => Promise<void>;
-  switchToTargetChain: () => Promise<void>;
+  chains: typeof defaultChains;
+  connectWallet: () => Promise<void>;
+  switchChain: (chain: Chains) => Promise<void>;
 }
