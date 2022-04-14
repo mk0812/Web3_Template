@@ -5,7 +5,7 @@
     "source.organizeImports": true,
     "source.fixAll.eslint": true
   },
-  "eslint.workingDirectories": ["./app"],
+  "eslint.workingDirectories": ["./projects/app"],
   "solidity.packageDefaultDependenciesDirectory": "contract/node_modules",
   "[javascriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
