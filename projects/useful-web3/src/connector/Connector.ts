@@ -1,4 +1,4 @@
-import { ChainParameter, ConnectorEvents, EIP1193 } from "../../types";
+import { ChainParameter, ConnectorEvents, EIP1193 } from "../types";
 
 export abstract class Connector {
   constructor() {}

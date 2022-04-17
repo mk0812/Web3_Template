@@ -1,6 +1,6 @@
 import type detectEthereumProvider from "@metamask/detect-provider";
-import { formatChainHex, invariant, parseChainId } from "..";
-import { ChainParameter, EIP1193 } from "../../types";
+import { ChainParameter, EIP1193 } from "../types";
+import { formatChainHex, invariant, parseChainId } from "../utils";
 import { Connector } from "./Connector";
 
 export class MetamaskConnector extends Connector {
