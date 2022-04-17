@@ -1,5 +1,5 @@
 export * from "./config";
-export * from "./MetamaskConnector";
+export * from "./connector/MetamaskConnector";
 
 export function invariant(value: unknown, message: string): asserts value {
   if (value) {
