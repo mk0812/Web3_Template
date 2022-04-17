@@ -1,8 +1,14 @@
 import { ICoreOptions } from "web3modal";
 
-export const defaultWeb3ModalOption = async (): Promise<
+export const defaultChainList = {};
+
+export const getDefaultWeb3ModalOption = async (): Promise<
   Partial<ICoreOptions>
 > => ({
-  providerOptions: {},
+  providerOptions: {
+    walletconnect: {
+      package: (await import("@walletconnect/web3-provider")).default,
+    },
+  },
   cacheProvider: true,
 });
