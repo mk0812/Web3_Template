@@ -1,5 +1,17 @@
-export * from "./config";
-export * from "./connector/MetamaskConnector";
+import { ICoreOptions } from "web3modal";
+
+export const defaultChainList = {};
+
+export const getDefaultWeb3ModalOption = async (): Promise<
+  Partial<ICoreOptions>
+> => ({
+  providerOptions: {
+    walletconnect: {
+      package: (await import("@walletconnect/web3-provider")).default,
+    },
+  },
+  cacheProvider: true,
+});
 
 export function invariant(value: unknown, message: string): asserts value {
   if (value) {

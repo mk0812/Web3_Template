@@ -1,2 +1,2 @@
-export * from "./connector";
+export * from "./Connector";
 export * from "./MetamaskConnector";
