@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "yarn workspace app dev",
     "test": "yarn workspace contract hardhat test",
-    "build": "yarn workspace @inaridiy/useful-web3 build"
+    "build": "yarn workspace @inaridiy/useful-web3 build",
+    "watch": "yarn workspace @inaridiy/useful-web3 watch"
   },
   "workspaces": {
     "packages": [

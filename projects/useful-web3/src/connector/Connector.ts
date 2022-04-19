@@ -4,18 +4,20 @@ export abstract class Connector {
   constructor() {}
   protected listeners: Map<
     keyof ConnectorEvents,
-    ((...args: unknown[]) => void)[]
+    ((...args: any[]) => void)[]
   > = new Map();
 
   public provider: EIP1193 | undefined;
   abstract connect(connectTo?: ChainParameter): Promise<void>;
   abstract switchChain(chain: ChainParameter): Promise<void>;
-  on(
-    key: keyof ConnectorEvents,
-    callback: (e: ConnectorEvents[typeof key]) => void | Promise<void>
+  disconnect?(): Promise<void>;
+
+  on<T extends keyof ConnectorEvents>(
+    key: T,
+    callback: (e: ConnectorEvents[T]) => void | Promise<void>
   ): void {
     this.listeners.has(key)
-      ? this.listeners.get(key).push(callback)
+      ? (this.listeners.get(key) as ((...args: any[]) => void)[]).push(callback)
       : this.listeners.set(key, [callback]);
   }
 
@@ -24,6 +26,8 @@ export abstract class Connector {
     event: ConnectorEvents[typeof key]
   ): void {
     this.listeners.has(key) &&
-      this.listeners.get(key).forEach((cb) => cb(event));
+      (this.listeners.get(key) as ((...args: any[]) => void)[]).forEach((cb) =>
+        cb(event)
+      );
   }
 }

@@ -1,17 +1,21 @@
 import commonjs from "@rollup/plugin-commonjs";
+import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import typescript from "@rollup/plugin-typescript";
+import external from "rollup-plugin-peer-deps-external";
 import postcss from "rollup-plugin-postcss";
-import typescript from "rollup-plugin-typescript2";
-import packageJson from "./package.json";
+import { terser } from "rollup-plugin-terser";
+
+const packageJson = require("./package.json");
 
 export default {
-  input: "./src/index.ts",
+  input: "src/index.ts",
   output: [
     {
       file: packageJson.main,
       format: "cjs",
       sourcemap: true,
+      name: "react-lib",
     },
     {
       file: packageJson.module,
@@ -20,14 +24,12 @@ export default {
     },
   ],
   plugins: [
-    peerDepsExternal(),
+    external(),
     resolve(),
     commonjs(),
-    typescript(),
-    postcss({
-      config: {
-        path: "./postcss.config.js",
-      },
-    }),
+    json(),
+    typescript({ tsconfig: "./tsconfig.json" }),
+    postcss(),
+    terser(),
   ],
 };

@@ -1,6 +1,16 @@
 import type { ethers } from "ethers";
+import { Connector } from "./connector";
 
-export interface Web3Interface {}
+export interface Web3Interface {
+  isLoading: boolean;
+  chainId: number | null;
+  accounts: string[];
+  error: Error | null;
+  connector: Connector | null;
+  connectWallet: (targetChain?: ChainParameter) => Promise<void>;
+  switchChain: (targetChain: ChainParameter) => Promise<void>;
+  disconnect: () => Promise<void>;
+}
 
 export interface RequestArguments {
   readonly method: string;
@@ -14,7 +24,7 @@ type EIP1193Events = {
 };
 
 export interface EIP1193 extends ethers.providers.ExternalProvider {
-  isMetaMask: boolean;
+  isMetaMask?: boolean;
   on: <T extends keyof EIP1193Events>(
     event: T,
     callback: EIP1193Events[T]
